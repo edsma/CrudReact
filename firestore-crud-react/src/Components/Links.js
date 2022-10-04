@@ -7,6 +7,7 @@ export const Links = () => {
     const [links,setLinks] = useState([]);
     const [currentId, setCurrentId] = useState([]);
     const addOrEditLink = async (linkObject)  => {
+        debugger;
         if(currentId === ''){
             await db.firestore().collection('links').doc().set(linkObject);
             toast('New link added',
@@ -65,9 +66,16 @@ export const Links = () => {
                                                    <i 
                                         className="material-icons"
                                         onClick={()=> setCurrentId(link.id)}>create</i>
+                                        
                                 </div>
-                              
-
+                              <div>
+                              {link.urlFoto?  
+                               <img src={link.urlFoto} alt="Girl in a jacket" width="500" height="600"></img>:
+                                <div></div>
+                                }
+                               
+                              </div>
+                          
                                 <p>{link.description}</p>
                                 <a href={link.url} target="_blank" rel="noopener noreferrer">Go to website</a>
                             </div>

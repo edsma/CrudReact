@@ -1,19 +1,28 @@
 import React, {useEffect, useState} from "react";
 import { db } from "../Firebase";
+import {getStorage, ref, uploadBytes,getDownloadURL} from 'firebase/storage';
 import { getAuth,signOut } from "firebase/auth";
 
 const auth = getAuth(db);
+const storage = getStorage(db);
 export const LinForm = (props) => {
 
     const initialStateValues = {
         url: '',
         name: '',
-        description: ''
+        description: '',
+        urlFoto: '' 
     }
 
     const handleInputChange = e => {
         const {name,value} = e.target;
         setValues({...values, [name] : value});
+    }
+
+    const  uploadFile = async (e) => {
+        const storageRef = ref(storage, file.name);
+        await uploadBytes(storageRef,e);
+        return getDownloadURL(storageRef);
     }
     
     useEffect(() => {
@@ -29,13 +38,20 @@ export const LinForm = (props) => {
         setValues({...doc.data()})
     }
 
+
     const [values, setValues] = useState(initialStateValues);
+    const [file, setFile] = useState(null);
 
 
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
+
+        console.log(file);
         e.preventDefault();
+        const rutaArchivo = await uploadFile(file);
+        values.urlFoto = rutaArchivo;
         props.addOrEditLink(values);
         setValues({...initialStateValues});
+
     }
     return (
       
@@ -88,6 +104,8 @@ export const LinForm = (props) => {
             <button type="submit" className="btn btn-primary btn-block">
                 {props.currentId === ''?  'Save' : 'Upload'}
             </button>
+            <br></br>
+            <input type="file" name="urlFoto" id="urlFoto" onChange={e => setFile(e.target.files[0])}/>
         </form>
                         
     )
